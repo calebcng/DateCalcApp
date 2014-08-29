@@ -1,0 +1,27 @@
+v1.0
+- Basic widget functionality
+- Open configuration on touch
+- Widget features:
+	- Basic Week Display
+	- Resizable, default 2x1
+	- Update once daily on change of day
+- Configuration features:
+	- Use current date feature
+	- Show current reference date
+
+v1.1
+- Changed app logo
+- Fixed to correct calculation for leap years
+- Configuration activity upgrades:
+	- Added radio buttons for new display formats
+	- Fixed crash on creating widget without inputting values (now uses previous or default values)
+- Widget upgrades:
+	- Added different display formats
+	- Grid layout, distinct display areas 
+	- Changed background
+
+v1.2
+- Fixed support for multiple instances
+- Changed Combination display to show Weeks and total days
+- Changed Weeks display to show the number of remainder days
+- Basic input restrictions for date month

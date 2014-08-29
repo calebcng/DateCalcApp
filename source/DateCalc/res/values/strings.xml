@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Date Calc</string>
+    <string name="widget_text">Hello Widget</string>
+    <string name="user_date">31</string>
+    <string name="user_month">12</string>
+    <string name="user_year">2013</string>
+    <string name="title_activity_hello_widget_configure">HelloWidgetConfigure</string>
+    <string name="hello_world">Date Calc Configuration</string>
+    <string name="action_settings">Settings</string>
+    <string name="date_label">Reference date</string>
+    <string name="month_label">Reference month</string>
+    <string name="year_label">Reference year</string>
+    <string name="create_button">Set Widget</string>
+    <string name="current_button">Use current date</string>
+    <string name="config_date_text">Enter date (DD)</string>
+    <string name="config_month_text">Enter month (MM)</string>
+    <string name="config_year_text">Enter year (YYYY)</string>
+    <string name="radiogroup">Widget display format:</string>
+    <string name="radio_weeks">Weeks</string>
+    <string name="radio_days">Days</string>
+    <string name="radio_combo">Combination</string>
+    <string name="previous_input">Current reference date:</string>
+
+</resources>

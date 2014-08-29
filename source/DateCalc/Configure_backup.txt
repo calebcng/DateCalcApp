@@ -1,0 +1,173 @@
+package com.hellowidget.datecalc;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.RemoteViews;
+import android.widget.TextView;
+
+public class Configure extends Activity {
+	private Configure context;
+	private int widgetID;
+	public static final String PREFS_NAME = "UserDateInputs";
+	private SharedPreferences prefs;
+	int displayFormat = 1;
+	//Current dates
+    SimpleDateFormat month = new SimpleDateFormat("MM", Locale.getDefault());
+	SimpleDateFormat date = new SimpleDateFormat("d", Locale.getDefault());
+	SimpleDateFormat year = new SimpleDateFormat("yyyy", Locale.getDefault());
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.configure);
+		setResult(RESULT_CANCELED);
+		context = this;
+		
+		Bundle extras = getIntent().getExtras();
+		if(extras != null) {
+			widgetID = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+		}
+		
+		final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
+		prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		int userDate = prefs.getInt("inputDate", 01);
+		int userMonth = prefs.getInt("inputMonth", 01);
+		int userYear = prefs.getInt("inputYear", 2000);
+		displayFormat = prefs.getInt("displaySettings", 1);
+		
+		TextView tv_previous_input = (TextView) findViewById(R.id.text_previous_input);
+		tv_previous_input.setText("Current reference date:\n" + userMonth + "/" + userDate + "/" + userYear);
+
+		//Initialize displayed components
+		final EditText et_date = (EditText) findViewById(R.id.text_date);
+		final EditText et_month = (EditText) findViewById(R.id.text_month);
+		final EditText et_year = (EditText) findViewById(R.id.text_year);
+		final Button b_create = (Button) findViewById(R.id.button_create);
+		final Button b_current = (Button) findViewById(R.id.button_current);
+		final RadioGroup dp_format = (RadioGroup) findViewById(R.id.radioGroup1);
+		//Set saved radio button
+		switch(displayFormat) {
+			case 1:
+				dp_format.check(R.id.radio_combo);
+				break;
+			case 2:
+				dp_format.check(R.id.radio_days);
+				break;
+			case 3:
+				dp_format.check(R.id.radio_weeks);
+				break;			
+		}
+		//Initialize On Click behavior
+		b_create.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				// GET text from edit text fields and commit to SharedPreferences
+				SharedPreferences.Editor custDateEdit = prefs.edit();
+				String userInput = et_date.getEditableText().toString();
+				if (userInput.matches("")) {
+					Log.d("configurationTag", "Blank date input - using existing reference date values");
+//					custDateEdit.putInt("inputDate", Integer.valueOf(date.format(new Date())));
+				}
+				else {
+					custDateEdit.putInt("inputDate", Integer.valueOf(et_date.getEditableText().toString()));
+				}
+				userInput = et_month.getEditableText().toString();
+				if (userInput.matches("")) {
+					Log.d("configurationTag", "Blank month input - using existing reference date values");
+//					custDateEdit.putInt("inputMonth", Integer.valueOf(month.format(new Date())));
+				}
+				else {
+					custDateEdit.putInt("inputMonth", Integer.valueOf(et_month.getEditableText().toString()));
+				}
+				userInput = et_year.getEditableText().toString();
+				if (userInput.matches("")) {
+					Log.d("configurationTag", "Blank year input - using existing reference date values");
+//					custDateEdit.putInt("inputYear", Integer.valueOf(year.format(new Date())));
+				}
+				else {
+					custDateEdit.putInt("inputYear", Integer.valueOf(et_year.getEditableText().toString()));
+				}				
+				custDateEdit.putInt("displaySettings", Integer.valueOf(displayFormat));
+				Log.d("configurationTag", "Display format is " + Integer.valueOf(displayFormat));
+				custDateEdit.commit();
+				//Update widget
+				Intent updateIntent = new Intent(context, Main.class);
+				updateIntent.setAction("PreferencesUpdated");
+				updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+				sendBroadcast(updateIntent);
+				widgetManager.updateAppWidget(widgetID, views);
+				
+				Intent resultValue = new Intent();
+				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+				setResult(RESULT_OK, resultValue);
+				finish();
+			}
+		});
+		b_current.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				// GET text from edit text fields and commit to SharedPreferences
+				SharedPreferences.Editor custDateEdit = prefs.edit();
+				custDateEdit.putInt("inputDate", Integer.valueOf(date.format(new Date())));
+				custDateEdit.putInt("inputMonth", Integer.valueOf(month.format(new Date())));
+				custDateEdit.putInt("inputYear", Integer.valueOf(year.format(new Date())));
+				custDateEdit.putInt("displaySettings", Integer.valueOf(displayFormat));
+				Log.d("configurationTag", "Display format is " + Integer.valueOf(displayFormat));
+				custDateEdit.commit();
+				//Update widget
+				Intent updateIntent = new Intent(context, Main.class);
+				updateIntent.setAction("PreferencesUpdated");
+				updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+				sendBroadcast(updateIntent);
+				widgetManager.updateAppWidget(widgetID, views);
+				
+				Intent resultValue = new Intent();
+				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetID);
+				setResult(RESULT_OK, resultValue);
+				finish();
+			}
+		});		
+		dp_format.setOnCheckedChangeListener(new OnCheckedChangeListener() {			
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch(checkedId) {
+					case R.id.radio_combo:
+						Log.d("configurationTag", "Combination display format selected");
+						displayFormat = 1;
+						break;
+					case R.id.radio_days:
+						Log.d("configurationTag", "Days display format selected");
+						displayFormat = 2;
+						break;
+					case R.id.radio_weeks:
+						Log.d("configurationTag", "Weeks display format selected");
+						displayFormat = 3;
+						break;
+					default:
+						Log.d("configurationTag", "Error - no display format selected\nUsing default display format");
+						displayFormat = 1;
+						break;
+				}
+			}
+		});
+		
+	}
+}
